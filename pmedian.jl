@@ -201,7 +201,8 @@ function solve_scs_direct(data::PMedianData; max_iters)
     @timeit "SCS direct" begin
         @timeit "generate" scs_prob = generate_scs_problem(data)
         @timeit "solve" solution = SCS.SCS_solve(SCS.IndirectSolver, 
-                                    scs_prob...; max_iters=max_iters, verbose=0)
+                                    scs_prob...; max_iters=max_iters,
+                                    acceleration_lookback=0, verbose=0)
     end
     objval = scs_prob[5]'*solution.x
     return objval
@@ -230,7 +231,8 @@ end
 
 function solve_scs_moi(data::PMedianData; max_iters)
     params = [(MOI.RawParameter("max_iters"), max_iters),
-              (MOI.Silent(), true)]
+              (MOI.Silent(), true),
+              (MOI.RawParameter("acceleration_lookback"), 0)]
     @timeit "SCS MOI" solve_moi(data, SCS.Optimizer, params=params)
 end
 
