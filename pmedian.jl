@@ -68,7 +68,7 @@ function generate_glpk_problem(prob, data::PMedianData)
     end
     GLPK.glp_set_obj_dir(prob, GLPK.GLP_MIN)
 
-    I = Cint[0] # Extra padding because GLPK starts reading from the second element (??)
+    I = Cint[0] # Extra padding because GLPK starts reading from the second element
     J = Cint[0]
     V = Float64[0.0]
     for i in 1:data.num_customers, j in 1:data.num_locations
