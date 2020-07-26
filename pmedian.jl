@@ -468,22 +468,22 @@ function run_benchmark(;
     Random.seed!(10)
     reset_timer!()
     data = PMedianData(num_facilities, num_customers, num_locations, rand(num_customers) .* num_locations)
-
+    GC.gc()
     glpk_moi_vector_obj = solve_glpk_moi(data, vector_version=true, time_limit_sec=time_limit_sec)
     @show glpk_moi_vector_obj
-
+    GC.gc()
     glpk_moi_scalar_obj = solve_glpk_moi(data, vector_version=false, time_limit_sec=time_limit_sec)
     @show glpk_moi_scalar_obj
-
+    GC.gc()
     glpk_direct_obj = solve_glpk_direct(data, time_limit_sec=time_limit_sec)
     @show glpk_direct_obj
-
+    GC.gc()
     scs_moi_vector_obj = solve_scs_moi(data, vector_version=true, max_iters=max_iters)
     @show scs_moi_vector_obj
-
+    GC.gc()
     scs_moi_scalar_obj = solve_scs_moi(data, vector_version=false, max_iters=max_iters)
     @show scs_moi_scalar_obj
-
+    GC.gc()
     scs_direct_obj = solve_scs_direct(data, max_iters=max_iters)
     @show scs_direct_obj
 
@@ -492,8 +492,8 @@ function run_benchmark(;
 end
 
 # JIT warm-up
-run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
-    time_limit_sec=Inf, max_iters=10000)
+# run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
+#     time_limit_sec=Inf, max_iters=10000)
 
 run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
     time_limit_sec=Inf, max_iters=10000)
@@ -505,27 +505,40 @@ run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
 # run_benchmark(num_facilities=10, num_customers=2000, num_locations=1000,
 #     time_limit_sec=0.1, max_iters=1)
 
+# GC.gc()
+run_benchmark(num_facilities=50, num_customers=200, num_locations=100,
+    time_limit_sec=0.0, max_iters=1)
+
 # using ProfileView
 
 # function time_scs()
 #     num_facilities=10
 #     num_customers=2000
 #     num_locations=1000
-#     data = PMedianData(num_facilities, num_customers, num_locations, rand(num_customers) .* num_locations)
+#     data = PMedianData(
+#         num_facilities,
+#         num_customers,
+#         num_locations,
+#         rand(num_customers) .* num_locations,
+#     )
 #     cache = MOI.Utilities.CachingOptimizer(
 #         MOI.Utilities.UniversalFallback(MOI.Utilities.Model{Float64}()),
 #         SCS.Optimizer()
 #     )
 #     model = MOI.Bridges.full_bridge_optimizer(cache, Float64)
 #     MOI.Utilities.reset_optimizer(cache)
-#     params = [(MOI.RawParameter("max_iters"), 1),
+#     params = [
+#         (MOI.RawParameter("max_iters"), 1),
 #         (MOI.Silent(), true),
-#         (MOI.RawParameter("acceleration_lookback"), 0)]
+#         (MOI.RawParameter("acceleration_lookback"), 0)
+#     ]
 #     for (param, value) in params
 #         MOI.set(model, param, value)
 #     end
 #     return model, data
 # end
-# GC.gc()
-# model, data = time_scs();
+# @time GC.gc()
+# @time model, data = time_scs();
 # @profview generate_moi_problem(model, data);
+# @time generate_moi_problem(model, data);
+# ProfileView.closeall()
