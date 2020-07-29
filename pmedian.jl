@@ -209,9 +209,14 @@ function solve_scs_direct(data::PMedianData; max_iters)
 end
 
 function solve_moi(data::PMedianData, optimizer; params)
-    model = MOI.Bridges.full_bridge_optimizer(MOI.Utilities.CachingOptimizer(
+    cached = MOI.Utilities.CachingOptimizer(
         MOI.Utilities.UniversalFallback(MOI.Utilities.Model{Float64}()),
-        optimizer()), Float64)
+        optimizer())
+    model = MOI.Bridges.full_bridge_optimizer(cached, Float64)
+    # resetting optimizer is necessary to use copy_to to transfer all the data
+    # from caching optimizer to GLPK in a single batch. If that is not called
+    # constraints are passed one by one during model generation phase.
+    MOI.Utilities.reset_optimizer(cached)
     for (param, value) in params
         MOI.set(model, param, value)
     end
@@ -235,8 +240,6 @@ function solve_scs_moi(data::PMedianData; max_iters)
               (MOI.RawParameter("acceleration_lookback"), 0)]
     @timeit "SCS MOI" solve_moi(data, SCS.Optimizer, params=params)
 end
-
-
 
 function run_benchmark(;num_facilities, num_customers, num_locations,
         time_limit_sec, max_iters)
@@ -268,4 +271,4 @@ run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
     time_limit_sec=Inf, max_iters=10000)
 
 run_benchmark(num_facilities=10, num_customers=2000, num_locations=1000,
-    time_limit_sec=5, max_iters=10)
+    time_limit_sec=1, max_iters=10)
