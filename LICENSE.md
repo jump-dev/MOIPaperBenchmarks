@@ -1,7 +1,8 @@
 The MOIPaperBenchmark repository is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2017: Benoît Legat, Oscar Dowson, Joaquim Dias Garcia,
-> Miles Lubin and contributors
+> Copyright (c) 2020: Benoît Legat, Oscar Dowson, Joaquim Dias Garcia,
+> and contributors
+> Copyright (c) 2020: Google LLC
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
