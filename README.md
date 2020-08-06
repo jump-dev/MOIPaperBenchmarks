@@ -4,6 +4,21 @@ MOIPaperBenchmark is a repository containing scripts and data related to the
 paper: _MathOptInterface: a data structure for mathematical optimization
 problems_.
 
+## One-time setup
+
+```
+$ julia --project=. -e "import Pkg; Pkg.instantiate()"
+$ julia --project=MathOptFormat -e "import Pkg; Pkg.instantiate()"
+$ pipenv install
+```
+
+## Briding experiments
+
+To run the CVXPY code, run:
+```
+$ pipenv run python3 pmedian.py
+```
+
 ## MathOptFormat experiments
 
 To run the filesize experiment, use:
