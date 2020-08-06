@@ -4,6 +4,13 @@ MOIPaperBenchmark is a repository containing scripts and data related to the
 paper: _MathOptInterface: a data structure for mathematical optimization
 problems_.
 
+## Bridging experiments
+
+To run the filesize experiment, use:
+```
+julia --project=. pmedian.jl
+```
+
 ## MathOptFormat experiments
 
 To run the filesize experiment, use:
