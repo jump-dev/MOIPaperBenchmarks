@@ -419,6 +419,9 @@ function solve_moi(data::PMedianData, optimizer; vector_version, params)
         optimizer()
     )
     model = MOI.Bridges.full_bridge_optimizer(cache, Float64)
+    # resetting optimizer is necessary to use copy_to to transfer all the data
+    # from caching optimizer to GLPK in a single batch. If that is not called
+    # constraints are passed one by one during model generation phase.
     MOI.Utilities.reset_optimizer(cache)
     for (param, value) in params
         MOI.set(model, param, value)
