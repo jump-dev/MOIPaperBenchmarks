@@ -1,6 +1,7 @@
 import MathOptInterface
 import SCS
 import GLPK
+import Printf
 import Random
 
 using SparseArrays
@@ -494,23 +495,72 @@ function run_benchmark(;
     println()
 end
 
-# JIT warm-up
-# run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
-#     time_limit_sec=Inf, max_iters=10000)
 
+function run_paper_benchmark(L)
+    to = TimerOutputs.get_defaulttimer()
+    s = ""
+    for l in L
+        row_starts = Dict(
+            "generate" => "\t\t\\multirow{3}{*}{$(l)} & generate",
+            "solve" => "\t\t& solve",
+            "total" => "\t\t& total",
+        )
+        row_computation = Dict(
+            "generate" => (to, key) -> round(
+                TimerOutputs.time(to[key]["generate"]) / 1e9; digits = 2
+            ),
+            "solve" => (to, key) -> round(
+                TimerOutputs.time(to[key]["solve"]) / 1e9; digits = 2
+            ),
+            "total" => (to, key) -> round(
+                (
+                    TimerOutputs.time(to[key]["generate"]) +
+                    TimerOutputs.time(to[key]["solve"])
+                ) / 1e9;
+                digits = 2
+            ),
+        )
+        run_benchmark(
+            num_facilities = 100,
+            num_customers = 100,
+            num_locations = l,
+            time_limit_sec = 0.0,
+            max_iters = 1,
+        )
+        for row in ["generate", "solve", "total"]
+            s *= row_starts[row]
+            for key in [
+                "GLPK MOI scalar",
+                "GLPK MOI vector",
+                "GLPK direct",
+                "",
+                "SCS MOI scalar",
+                "SCS MOI vector",
+                "SCS direct",
+                "",
+            ]
+                if isempty(key)
+                    s *= " &"
+                else
+                    t = row_computation[row](to, key)
+                    s *= Printf.@sprintf " & %.2f" t
+                end
+            end
+            s *= " \\\\\n"
+        end
+    end
+    println(s)
+    return s
+end
+
+# JIT warm-up
 run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
     time_limit_sec=Inf, max_iters=10000)
 
 run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
-    time_limit_sec=0.0, max_iters=1)
+    time_limit_sec=Inf, max_iters=10000)
 
-
-# run_benchmark(num_facilities=10, num_customers=2000, num_locations=1000,
-#     time_limit_sec=0.1, max_iters=1)
-
-# GC.gc()
-run_benchmark(num_facilities=50, num_customers=200, num_locations=100,
-    time_limit_sec=0.0, max_iters=1)
+run_paper_benchmark([1_000, 5_000, 10_000])
 
 # using ProfileView
 
