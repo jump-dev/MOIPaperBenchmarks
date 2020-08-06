@@ -42,7 +42,7 @@ def generate_problem(num_facilities, num_customers,
 
 
 def solve(solver, num_facilities, num_customers, num_locations,
-          customer_locations, scs_max_iters=10000):
+          customer_locations, scs_max_iters=10000, glpk_tm_lim = 5000):
     start_generate = time.time()
     prob, f, x = generate_problem(
         num_facilities, num_customers, num_locations, customer_locations)
@@ -56,7 +56,7 @@ def solve(solver, num_facilities, num_customers, num_locations,
                 data,
                 solver_opts={
                     "glpk": {
-                        "tm_lim": 5000,
+                        "tm_lim": glpk_tm_lim,
                         "msg_lev": "GLP_MSG_OFF"}})
         elif solver == cp.SCS:
             # Specifying acceleration_lookback is needed to avoid cvxpy trying
@@ -111,11 +111,21 @@ print("GLPK small problem")
 solve(cp.GLPK, num_facilities=5, num_customers=20, num_locations=10,
       customer_locations=test_customer_locations)
 
-large_customer_locations = np.random.rand(2000) * 1000
+# large_customer_locations = np.random.rand(2000) * 1000
+# print("SCS large problem")
+# solve(cp.SCS, num_facilities=10, num_customers=2000, num_locations=1000,
+#       customer_locations=large_customer_locations, scs_max_iters=10)
+# print("GLPK large problem")
+# solve(cp.GLPK, num_facilities=10, num_customers=2000, num_locations=1000,
+#       customer_locations=large_customer_locations)
 
-print("SCS large problem")
-solve(cp.SCS, num_facilities=10, num_customers=2000, num_locations=1000,
-      customer_locations=large_customer_locations, scs_max_iters=10)
-print("GLPK large problem")
-solve(cp.GLPK, num_facilities=10, num_customers=2000, num_locations=1000,
-      customer_locations=large_customer_locations)
+customer_locations = np.random.rand(100) * 1000
+for l in [1_000, 5_000, 10_000]:
+    print("GLPK %s" % l)
+    solve(cp.GLPK, num_facilities=100, num_customers=100, num_locations=l,
+        customer_locations=customer_locations, glpk_tm_lim = 1)
+    print()
+    print("SCS %s" % l)
+    solve(cp.SCS, num_facilities=100, num_customers=100, num_locations=l,
+        customer_locations=customer_locations, scs_max_iters=1)
+    print()
