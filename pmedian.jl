@@ -503,7 +503,7 @@ function run_paper_benchmark(L)
     for l in L
         row_starts = Dict(
             "generate" => "\t\t\\multirow{3}{*}{$(l)} & generate",
-            "solve" => "\t\t& solve",
+            "solve" => "\t\t& load",
             "total" => "\t\t& total",
         )
         row_computation = Dict(
