@@ -388,8 +388,8 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[MathOptInterface]]
 deps = ["BenchmarkTools", "CodecBzip2", "CodecZlib", "JSON", "JSONSchema", "LinearAlgebra", "MutableArithmetics", "OrderedCollections", "SparseArrays", "Test", "Unicode"]
-git-tree-sha1 = "ee6ba1d92b62bfc78cdace6c5103493990cdf8e3"
-repo-rev = "jg/indexmap_perf"
+git-tree-sha1 = "5167f8881ad958e10e4d0f3bc130f9d298e7481e"
+repo-rev = "master"
 repo-url = "https://github.com/jump-dev/MathOptInterface.jl.git"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 version = "0.9.14"
@@ -507,8 +507,8 @@ version = "0.2.0"
 
 [[SCS]]
 deps = ["BinaryProvider", "Libdl", "LinearAlgebra", "MathOptInterface", "MathProgBase", "SCS_jll", "SparseArrays"]
-git-tree-sha1 = "27bb033150f16dcda727f62e4ec195cd54d433a6"
-repo-rev = "master"
+git-tree-sha1 = "fd4b2934305f49a2f54a92fff88f43c15af411f0"
+repo-rev = "bl/direct_transpose"
 repo-url = "https://github.com/jump-dev/SCS.jl.git"
 uuid = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
 version = "0.7.0"

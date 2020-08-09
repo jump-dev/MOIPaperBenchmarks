@@ -6,39 +6,57 @@ problems_.
 
 ## One-time setup
 
+First, install Julia 1.5, Python 3.8, and pipenv.
+
+If you have Anaconda installed, you can create a new conda environment as
+follows:
+
+```
+conda create --name MOIPaperBenchmark python=3.8 -y
+conda activate MOIPaperBenchmark
+pip install pipenv
+```
+
+Once installed, you can initialize the environments as follows:
+
 ```
 $ julia --project=. -e "import Pkg; Pkg.instantiate()"
 $ julia --project=MathOptFormat -e "import Pkg; Pkg.instantiate()"
 $ pipenv install
 ```
 
-## Briding experiments
+## Bridging experiments
 
-To run the CVXPY code, run:
-```
-$ pipenv run python3 pmedian.py
-```
+Run the bridging experiment as follows:
 
-To run the Julia code, run:
 ```
+$ pipenv run python pmedian.py
 $ julia --project=. pmedian.jl
 ```
 
+Note that you must run the Python version first, since it makes a temporary file
+with the CVXPY results that is used by the Julia script to build the Latex
+table.
+
 ## MathOptFormat experiments
 
-To run the filesize experiment, use:
+Run the filesize experiment as follows:
+
 ```
 $ cd MathOptFormat
 $ julia --project=. mof_experiments.jl --conversion
 ```
+
 To speed up this process, and because we are not measuring timing information,
 you can use multiple threads:
+
 ```
 $ cd MathOptFormat
 $ export JULIA_NUM_THREADS=4; julia --project=. mof_experiments.jl --conversion
 ```
 
-To run the timing experiment, use:
+Run the timing experiment as follows:
+
 ```
 $ cd MathOptFormat
 $ julia --project=. mof_experiments.jl --timing

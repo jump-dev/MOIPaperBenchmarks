@@ -1,6 +1,7 @@
 import MathOptInterface
 import SCS
 import GLPK
+import JSON
 import Printf
 import Random
 
@@ -495,10 +496,10 @@ function run_benchmark(;
     println()
 end
 
-
 function run_paper_benchmark(L)
     to = TimerOutputs.get_defaulttimer()
     s = ""
+    cvxpy = JSON.parsefile("cvxpy.json")
     for l in L
         row_starts = Dict(
             "generate" => "\t\t\\multirow{3}{*}{$(l)} & generate",
@@ -524,7 +525,7 @@ function run_paper_benchmark(L)
             num_facilities = 100,
             num_customers = 100,
             num_locations = l,
-            time_limit_sec = 0.0,
+            time_limit_sec = 0.001,
             max_iters = 1,
         )
         for row in ["generate", "solve", "total"]
@@ -533,18 +534,20 @@ function run_paper_benchmark(L)
                 "GLPK MOI scalar",
                 "GLPK MOI vector",
                 "GLPK direct",
-                "",
+                "GLPK CVXPY",
                 "SCS MOI scalar",
                 "SCS MOI vector",
                 "SCS direct",
-                "",
+                "SCS CVXPY",
             ]
-                if isempty(key)
-                    s *= " &"
+                t = if key == "GLPK CVXPY"
+                    cvxpy["glpk"]["$(l)"][row]
+                elseif key == "SCS CVXPY"
+                    cvxpy["scs"]["$(l)"][row]
                 else
-                    t = row_computation[row](to, key)
-                    s *= Printf.@sprintf " & %.2f" t
+                    row_computation[row](to, key)
                 end
+                s *= Printf.@sprintf " & %.2f" t
             end
             s *= " \\\\\n"
         end
@@ -560,38 +563,4 @@ run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
 run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
     time_limit_sec=Inf, max_iters=10000)
 
-run_paper_benchmark([1_000, 5_000, 10_000])
-
-# using ProfileView
-
-# function time_scs()
-#     num_facilities=10
-#     num_customers=2000
-#     num_locations=1000
-#     data = PMedianData(
-#         num_facilities,
-#         num_customers,
-#         num_locations,
-#         rand(num_customers) .* num_locations,
-#     )
-#     cache = MOI.Utilities.CachingOptimizer(
-#         MOI.Utilities.UniversalFallback(MOI.Utilities.Model{Float64}()),
-#         SCS.Optimizer()
-#     )
-#     model = MOI.Bridges.full_bridge_optimizer(cache, Float64)
-#     MOI.Utilities.reset_optimizer(cache)
-#     params = [
-#         (MOI.RawParameter("max_iters"), 1),
-#         (MOI.Silent(), true),
-#         (MOI.RawParameter("acceleration_lookback"), 0)
-#     ]
-#     for (param, value) in params
-#         MOI.set(model, param, value)
-#     end
-#     return model, data
-# end
-# @time GC.gc()
-# @time model, data = time_scs();
-# @profview generate_moi_problem(model, data);
-# @time generate_moi_problem(model, data);
-# ProfileView.closeall()
+run_paper_benchmark([1_000, 5_000, 10_000, 50_000])
