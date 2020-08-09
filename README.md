@@ -8,15 +8,6 @@ problems_.
 
 First, install Julia 1.5, Python 3.8, and pipenv.
 
-If you have Anaconda installed, you can create a new conda environment as
-follows:
-
-```
-conda create --name MOIPaperBenchmark python=3.8 -y
-conda activate MOIPaperBenchmark
-pip install pipenv
-```
-
 Once installed, you can initialize the environments as follows:
 
 ```
