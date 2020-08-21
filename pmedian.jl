@@ -46,70 +46,54 @@ function generate_moi_problem(model, data::PMedianData)
     ### Objective function
     ###
 
-    MOI.set(
-        model,
-        MOI.ObjectiveFunction{MOI.ScalarAffineFunction{Float64}}(),
-        MOI.ScalarAffineFunction(
-            [
-                MOI.ScalarAffineTerm(
-                    abs(data.customer_locations[i] - j),
-                    assignment_variables[i, j]
-                )
-                for i in 1:NC for j in 1:NL
-            ],
-            0.0,
-        ),
+    func = MOI.ScalarAffineFunction(
+        Vector{MOI.ScalarAffineTerm{Float64}}(undef, NC * NL),
+        0.0
     )
+    for i in 1:NC
+        for j in 1:NL
+            func.terms[(i - 1) * NL + j] = MOI.ScalarAffineTerm(
+                abs(data.customer_locations[i] - j),
+                assignment_variables[i, j]
+            )
+        end
+    end
+    MOI.set(model, MOI.ObjectiveFunction{typeof(func)}(), func)
     MOI.set(model, MOI.ObjectiveSense(), MOI.MIN_SENSE)
 
-    ###
-    ### assignment_variables[i, j] <= facility_variables[j]
-    ###
-
-    for i in 1:NC, j in 1:NL
-        MOI.add_constraint(
-            model,
-            MOI.ScalarAffineFunction(
-                [
-                    MOI.ScalarAffineTerm(1.0, assignment_variables[i, j]),
-                    MOI.ScalarAffineTerm(-1.0, facility_variables[j])
-                ],
-                0.0,
-            ),
-            MOI.LessThan(0.0),
-        )
-    end
+    resize!(func.terms, NL)
 
     ###
     ### sum_j assignment_variables[i, j] = 1
     ###
 
     for i in 1:NC
-        MOI.add_constraint(
-            model,
-            MOI.ScalarAffineFunction(
-                [
-                    MOI.ScalarAffineTerm(1.0, assignment_variables[i, j])
-                    for j in 1:NL
-                ],
-                0.0,
-            ),
-            MOI.EqualTo(1.0),
-        )
+        for j in 1:NL
+            func.terms[j] = MOI.ScalarAffineTerm(1.0, assignment_variables[i, j])
+        end
+        MOI.add_constraint(model, func, MOI.EqualTo(1.0))
     end
 
     ###
     ### sum_j facility_variables[j] == num_facilities
     ###
 
-    MOI.add_constraint(
-        model,
-        MOI.ScalarAffineFunction(
-            MOI.ScalarAffineTerm.(1.0, facility_variables),
-            0.0,
-        ),
-        MOI.EqualTo{Float64}(data.num_facilities),
-    )
+    for i in 1:NL
+        func.terms[i] = MOI.ScalarAffineTerm(1.0, facility_variables[i])
+    end
+    MOI.add_constraint(model, func, MOI.EqualTo{Float64}(data.num_facilities))
+
+    resize!(func.terms, 2)
+
+    ###
+    ### assignment_variables[i, j] <= facility_variables[j]
+    ###
+
+    for i in 1:NC, j in 1:NL
+        func.terms[1] = MOI.ScalarAffineTerm(1.0, assignment_variables[i, j])
+        func.terms[2] = MOI.ScalarAffineTerm(-1.0, facility_variables[j])
+        MOI.add_constraint(model, func, MOI.LessThan(0.0))
+    end
 
     return assignment_variables, facility_variables
 end
