@@ -556,11 +556,6 @@ function run_paper_benchmark(L)
     return s
 end
 
-# JIT warm-up
-run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
-    time_limit_sec=Inf, max_iters=10000)
-
-run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
-    time_limit_sec=Inf, max_iters=10000)
-
 run_paper_benchmark([1_000, 5_000, 10_000, 50_000])
+
+exit()

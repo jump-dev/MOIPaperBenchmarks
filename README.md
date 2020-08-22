@@ -55,3 +55,23 @@ $ julia --project=. mof_experiments.jl --timing
 
 Note: you must run the filesize experiment first to generate the files used in
 the timing experiment.
+
+
+## Precompiling to run tests
+
+Download pakcages and generate system image.
+
+```
+] add MathOptInterface, GLPK, SCS, JSON, TimerOutputs, PackageCompiler
+using PackageCompiler
+PackageCompiler.create_sysimage(
+    [:MathOptInterface, :GLPK, :JSON, :SCS, :TimerOutputs];
+    sysimage_path="moibenchmark.so",
+    precompile_execution_file="path_to/pmedian.jl") 
+```
+
+Execute julia with the precompiled file.
+
+```
+julia  -Jmoibenchmark.so --load path_to/pmedian.jl
+```
