@@ -12,6 +12,7 @@ Once installed, you can initialize the environments as follows:
 
 ```
 $ julia --project=. -e "import Pkg; Pkg.instantiate()"
+$ julia --project=. precompile.jl
 $ julia --project=MathOptFormat -e "import Pkg; Pkg.instantiate()"
 $ pipenv install
 ```
@@ -22,7 +23,7 @@ Run the bridging experiment as follows:
 
 ```
 $ pipenv run python pmedian.py
-$ julia --project=. pmedian.jl
+$ julia --project=. -Jmoibenchmark.so pmedian.jl
 ```
 
 Note that you must run the Python version first, since it makes a temporary file
@@ -55,23 +56,3 @@ $ julia --project=. mof_experiments.jl --timing
 
 Note: you must run the filesize experiment first to generate the files used in
 the timing experiment.
-
-
-## Precompiling to run tests
-
-Download pakcages and generate system image.
-
-```
-] add MathOptInterface, GLPK, SCS, JSON, TimerOutputs, PackageCompiler
-using PackageCompiler
-PackageCompiler.create_sysimage(
-    [:MathOptInterface, :GLPK, :JSON, :SCS, :TimerOutputs];
-    sysimage_path="moibenchmark.so",
-    precompile_execution_file="path_to/pmedian.jl") 
-```
-
-Execute julia with the precompiled file.
-
-```
-julia  -Jmoibenchmark.so --load path_to/pmedian.jl
-```

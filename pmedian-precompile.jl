@@ -496,71 +496,7 @@ function run_benchmark(;
     println()
 end
 
-function run_paper_benchmark(L)
-    to = TimerOutputs.get_defaulttimer()
-    s = ""
-    if isfile("cvxpy.json")
-        cvxpy = JSON.parsefile("cvxpy.json")
-    else
-        cvxpy = nothing
-        println("WARNING: cvxpy.json not found.")
-    end
-    for l in L
-        row_starts = Dict(
-            "generate" => "\t\t\\multirow{3}{*}{$(l)} & generate",
-            "solve" => "\t\t& load",
-            "total" => "\t\t& total",
-        )
-        row_computation = Dict(
-            "generate" => (to, key) -> round(
-                TimerOutputs.time(to[key]["generate"]) / 1e9; digits = 2
-            ),
-            "solve" => (to, key) -> round(
-                TimerOutputs.time(to[key]["solve"]) / 1e9; digits = 2
-            ),
-            "total" => (to, key) -> round(
-                (
-                    TimerOutputs.time(to[key]["generate"]) +
-                    TimerOutputs.time(to[key]["solve"])
-                ) / 1e9;
-                digits = 2
-            ),
-        )
-        run_benchmark(
-            num_facilities = 100,
-            num_customers = 100,
-            num_locations = l,
-            time_limit_sec = 0.001,
-            max_iters = 1,
-        )
-        for row in ["generate", "solve", "total"]
-            s *= row_starts[row]
-            for key in [
-                "GLPK MOI scalar",
-                "GLPK MOI vector",
-                "GLPK direct",
-                "GLPK CVXPY",
-                "SCS MOI scalar",
-                "SCS MOI vector",
-                "SCS direct",
-                "SCS CVXPY",
-            ]
-                t = if key == "GLPK CVXPY"
-                    cvxpy !== nothing ? cvxpy["glpk"]["$(l)"][row] : NaN
-                elseif key == "SCS CVXPY"
-                    cvxpy !== nothing ? cvxpy["scs"]["$(l)"][row] : NaN
-                else
-                    row_computation[row](to, key)
-                end
-                s *= Printf.@sprintf " & %.2f" t
-            end
-            s *= " \\\\\n"
-        end
-    end
-    println(s)
-    return s
-end
-
-run_paper_benchmark([1_000, 5_000, 10_000, 50_000])
+run_benchmark(num_facilities=5, num_customers=20, num_locations=10,
+    time_limit_sec=0.1, max_iters=1)
 
 exit()
