@@ -454,8 +454,8 @@ function solve_glpk_moi(data::PMedianData; vector_version, time_limit_sec=Inf)
     )
 end
 
-function solve_scs_moi(data::PMedianData; vector_version, max_iters)
-    params = [
+function solve_scs_moi(data::PMedianData; vector_version, max_iters::Int)
+    params = Tuple{MOI.RawParameter, Int}[
         (MOI.RawParameter("max_iters"), max_iters),
         (MOI.RawParameter("verbose"), 0),
         (MOI.RawParameter("acceleration_lookback"), 0)

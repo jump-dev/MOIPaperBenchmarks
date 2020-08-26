@@ -1,7 +1,9 @@
 using PackageCompiler
 PackageCompiler.create_sysimage(
-    [:MathOptInterface, :GLPK, :JSON, :SCS, :TimerOutputs];
+    [:Benchmark];
     sysimage_path="moibenchmark.so",
-    precompile_execution_file="pmedian-precompile.jl")
+    precompile_execution_file="pmedian-precompile.jl",
+    precompile_statements_file="statements.jl"
+    )
 
 exit(0)
