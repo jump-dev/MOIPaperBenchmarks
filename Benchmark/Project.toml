@@ -2,3 +2,16 @@ name = "Benchmark"
 uuid = "66d25156-912b-40b1-9cd1-33e318c2325d"
 authors = ["Joaquim Garcia <joaquimgarcia@psr-inc.com>"]
 version = "0.1.0"
+
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
+ProfileView = "c46f51b8-102a-5cf2-8d2c-8597cb0e0da7"
+SCS = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
+TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
