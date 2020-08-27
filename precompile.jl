@@ -4,6 +4,5 @@ PackageCompiler.create_sysimage(
     sysimage_path="moibenchmark.so",
     precompile_execution_file="pmedian-precompile.jl",
     precompile_statements_file="statements.jl"
+    # see statements.jl for more details
     )
-
-exit(0)

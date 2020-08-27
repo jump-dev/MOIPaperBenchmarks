@@ -563,6 +563,4 @@ function run_paper_benchmark(L)
     return s
 end
 
-# run_paper_benchmark([1_00, 5_00, 10_00, 50_00])
-
 end # module

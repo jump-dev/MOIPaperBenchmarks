@@ -1,3 +1,11 @@
+#=
+This file was manually genererated by executing:
+
+    julia --project=. -Jmoibenchmark.so --trace-compile=stderr pmedian.jl
+
+The procompile statements are written in the screen. They were copied and
+pasted to this file.
+=#
 precompile(Tuple{Base.Fix2{typeof(Base.isequal), DataType}, Type{T} where T})
 precompile(Tuple{Base.Fix2{typeof(Base.isequal), UnionAll}, Type{T} where T})
 precompile(Tuple{typeof(MathOptInterface.Bridges.Variable.concrete_bridge_type), DataType, Type{MathOptInterface.Nonpositives}})
