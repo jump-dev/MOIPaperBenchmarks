@@ -3,7 +3,7 @@ This file was manually genererated by executing:
 
     julia --project=. -Jmoibenchmark.so --trace-compile=stderr pmedian.jl
 
-The procompile statements are written in the screen. They were copied and
+The precompile statements are written in the screen. They were copied and
 pasted to this file.
 =#
 precompile(Tuple{Base.Fix2{typeof(Base.isequal), DataType}, Type{T} where T})
