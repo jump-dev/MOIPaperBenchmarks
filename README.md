@@ -28,3 +28,9 @@ $ julia --project=. -Jmoibenchmark pmedian.jl
 Note that you must run the Python version first, since it makes a temporary file
 with the CVXPY results that is used by the Julia script to build the Latex
 table.
+
+## Notes
+
+Running this benchmark requires a large amount of RAM. In practice, we found that
+even machines with 16 GB of RAM ended up swapping to the detriment of performance.
+To avoid this issue, we used a machine with 250 GB of RAM.
