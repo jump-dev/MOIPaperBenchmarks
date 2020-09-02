@@ -12,6 +12,7 @@ Once installed, you can initialize the environments as follows:
 
 ```
 $ julia --project=. -e "import Pkg; Pkg.instantiate()"
+$ julia --project=. precompile.jl
 $ pipenv install
 ```
 
@@ -21,7 +22,7 @@ Run the bridging experiment as follows:
 
 ```
 $ pipenv run python pmedian.py
-$ julia --project=. pmedian.jl
+$ julia --project=. -Jmoibenchmark pmedian.jl
 ```
 
 Note that you must run the Python version first, since it makes a temporary file
