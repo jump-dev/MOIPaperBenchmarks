@@ -31,7 +31,7 @@ function generate_moi_problem(model, data::PMedianData)
     facility_variables = MOI.add_variables(model, NL)
 
     for v in facility_variables
-        MOI.add_constraint(model, MOI.SingleVariable(v), MOI.Interval(0.0, 1.0))
+        MOI.add_constraint(model, v, MOI.Interval(0.0, 1.0))
     end
 
     ###
@@ -40,7 +40,7 @@ function generate_moi_problem(model, data::PMedianData)
 
     assignment_variables = reshape(MOI.add_variables(model, NC * NL), NC, NL)
     for v in assignment_variables
-        MOI.add_constraint(model, MOI.SingleVariable(v), MOI.GreaterThan(0.0))
+        MOI.add_constraint(model, v, MOI.GreaterThan(0.0))
         # "Less than 1.0" constraint is redundant.
     end
 
@@ -405,8 +405,8 @@ end
 function solve_scs_direct(data::PMedianData; max_iters)
     @timeit "SCS direct" begin
         @timeit "generate" scs_prob = generate_scs_problem(data)
-        @timeit "solve" solution = SCS.SCS_solve(
-            SCS.IndirectSolver,
+        @timeit "solve" solution = SCS.scs_solve(
+            SCS.DirectSolver,
             scs_prob...;
             max_iters=max_iters,
             acceleration_lookback=0,
@@ -455,10 +455,10 @@ function solve_glpk_moi(data::PMedianData; vector_version, time_limit_sec=Inf)
 end
 
 function solve_scs_moi(data::PMedianData; vector_version, max_iters::Int)
-    params = Tuple{MOI.RawParameter, Int}[
-        (MOI.RawParameter("max_iters"), max_iters),
-        (MOI.RawParameter("verbose"), 0),
-        (MOI.RawParameter("acceleration_lookback"), 0)
+    params = Tuple{MOI.RawOptimizerAttribute, Int}[
+        (MOI.RawOptimizerAttribute("max_iters"), max_iters),
+        (MOI.RawOptimizerAttribute("verbose"), 0),
+        (MOI.RawOptimizerAttribute("acceleration_lookback"), 0)
     ]
     s_type = vector_version ? "vector" : "scalar"
     @timeit(
